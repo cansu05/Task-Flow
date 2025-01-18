@@ -1,7 +1,12 @@
-import type { Metadata } from "next";
+"use client";
+
+import { ThemeProvider } from "@emotion/react";
+import { CssBaseline } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { Geist, Geist_Mono } from "next/font/google";
+import theme from "../themes/theme";
 import "./globals.css";
-import ThemeWrapper from '@/app/providers/themeProvider'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,12 +18,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "TaskFlow",
-  description:
-    "Collaborate with your team and track progress seamlessly with TaskFlow.",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +28,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeWrapper>{children}</ThemeWrapper>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <CssBaseline />
+            {children}
+          </LocalizationProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
