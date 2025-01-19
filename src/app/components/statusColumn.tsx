@@ -43,11 +43,12 @@ export const StatusColumn: FC<StatusColumnProps> = ({
     >
       <TaskCounter count={taskList.length} title={title} colors={colors} />
 
-      {taskList.map((task) => (
+      {taskList.map((task, index) => (
         <SortableTask
           key={task.id}
           task={task}
           currentStatus={name}
+          index={index}
           statusColors={colors}
         />
       ))}

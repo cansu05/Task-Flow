@@ -8,16 +8,6 @@ export type TaskState = {
   [key: string]: Task[];
 };
 
-const mapStatusKeyToValue = {
-  open: "Open",
-  inProgress: "In Progress",
-  review: "Review",
-  done: "Done",
-} as const;
-
-type TaskStateKey = keyof typeof mapStatusKeyToValue; // "open" | "inProgress" | "review" | "done"
-
-
 export type StatusColors = {
   bgColor: string;
   btnColor: string;
@@ -28,13 +18,15 @@ export type Store = {
   tasks: TaskState;
   addTask: (column: keyof TaskState, task: Task) => void;
   moveTask: (
-    source: keyof TaskState,
-    destination: keyof TaskState,
-    taskIndex: number
+    source: keyof TaskState, 
+    destination: keyof TaskState, 
+    sourceIndex: number, 
+    destinationIndex: number 
   ) => void;
   deleteTask: (column: keyof TaskState, taskId: string) => void;
   editTask: (column: keyof TaskState, updatedTask: Task) => void;
 };
+
 
 export type Id = string;
 

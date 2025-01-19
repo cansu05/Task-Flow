@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Store } from "@/types"; 
+import { arrayMove } from "@dnd-kit/sortable";
 
 export const useStore = create<Store>((set) => ({
   tasks: {
@@ -23,22 +24,28 @@ export const useStore = create<Store>((set) => ({
       };
     }),
 
-  moveTask: (source, destination, taskIndex) => {
-  set((state) => {
-    if (!state.tasks[source] || !state.tasks[destination]) {
-      console.error(`Invalid source (${source}) or destination (${destination}) column`);
-      return state;
-    }
 
+moveTask: (source, destination, sourceIndex, destinationIndex) => {
+  set((state) => {
     const updatedTasks = { ...state.tasks };
-    const [movedTask] = updatedTasks[source].splice(taskIndex, 1);
-    updatedTasks[destination].push(movedTask);
+
+    if (source === destination) {
+      updatedTasks[source] = arrayMove(
+        updatedTasks[source],
+        sourceIndex,
+        destinationIndex
+      );
+    } else {
+      const [movedTask] = updatedTasks[source].splice(sourceIndex, 1);
+      updatedTasks[destination].splice(destinationIndex, 0, movedTask);
+    }
 
     return {
       tasks: updatedTasks,
     };
   });
 },
+
 
   deleteTask: (column, taskId) =>
     set((state) => {
@@ -58,7 +65,6 @@ export const useStore = create<Store>((set) => ({
     }),
   editTask: (column, updatedTask) =>
     set((state) => {
-    
       if (!Array.isArray(state.tasks[column])) {
         console.error(`Invalid column: ${column}`);
         return state;
