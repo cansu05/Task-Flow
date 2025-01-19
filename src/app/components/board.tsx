@@ -9,7 +9,6 @@ import { getStatusMap } from "@/utils/statusMap";
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import {
   SortableContext,
-  arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
@@ -20,6 +19,8 @@ export default function Board() {
   const [currentStatus, setCurrentStatus] = useState<string>("");
 
   const statusMap = getStatusMap(theme);
+
+  console.log(tasks)
 
   const handleOpenDialog = (status: string) => {
     setCurrentStatus(status);
@@ -34,17 +35,40 @@ export default function Board() {
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (!over) return;
+    console.log("Active Data:", active.data.current);
+    if (!over) {
+      console.error("Over is null");
+      return;
+    }
+
+    console.log("Over Data:", over.data.current);
 
     const sourceColumn = active.data.current?.column;
     const destinationColumn = over.data.current?.column;
+
+    const sourceIndex = active.data.current?.index;
+    const destinationIndex = over.data.current?.index;
+
+    console.log("Source Column:", sourceColumn);
+    console.log("Destination Column:", destinationColumn);
+    console.log("Source Index:", sourceIndex);
+    console.log("Destination Index:", destinationIndex);
 
     if (!sourceColumn || !destinationColumn) {
       console.error("Invalid source or destination column");
       return;
     }
 
-    moveTask(sourceColumn, destinationColumn, active.id);
+    if (sourceIndex === undefined || destinationIndex === undefined) {
+      console.error("Source or destination index is undefined");
+      return;
+    }
+
+    if (sourceColumn === destinationColumn) {
+      moveTask(sourceColumn, sourceColumn, sourceIndex, destinationIndex);
+    } else {
+      moveTask(sourceColumn, destinationColumn, sourceIndex, 0); // destinationIndex olarak 0
+    }
   };
 
 
