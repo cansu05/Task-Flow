@@ -14,10 +14,10 @@ import AddIcon from "@mui/icons-material/Add";
 // ---------------------------------------------------------------
 
 export default function Home() {
-  const theme = useTheme();
+  const {palette} = useTheme();
   return (
     <Container
-      sx={{ backgroundColor: theme.palette.background.default, mt: 5 }}
+      sx={{ backgroundColor: palette.background.default, mt: 5 }}
     >
         <Stack
           display="flex"
@@ -28,8 +28,8 @@ export default function Home() {
             <Typography variant="h4">TaskFlow</Typography>
             <IconButton
                 sx={{
-                  color: theme.palette.primary.main,
-                  border: `1px dashed ${theme.palette.primary.main}`,
+                  color: palette.primary.main,
+                  border: `1px dashed ${palette.primary.main}`,
                   width: "30px",
                   height: "30px",
                 }}
@@ -39,7 +39,7 @@ export default function Home() {
         </Stack>
         <Divider
             sx={{
-              borderColor: `${theme.palette.secondary.main}`,
+              borderColor: `${palette.secondary.main}`,
               borderWidth: 1,
               mb: 5,
             }}

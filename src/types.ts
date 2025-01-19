@@ -1,20 +1,32 @@
 // type.ts
+
 export type TaskState = {
-  open: string[];
-  inProgress: string[];
-  review: string[];
-  done: string[];
+  open: Task[];
+  inProgress: Task[];
+  review: Task[];
+  done: Task[];
+  [key: string]: Task[];
 };
 
-export type statusColors = {
-    bgColor: string;
-    btnColor: string;
-    textColor: string;
+const mapStatusKeyToValue = {
+  open: "Open",
+  inProgress: "In Progress",
+  review: "Review",
+  done: "Done",
+} as const;
+
+type TaskStateKey = keyof typeof mapStatusKeyToValue; // "open" | "inProgress" | "review" | "done"
+
+
+export type StatusColors = {
+  bgColor: string;
+  btnColor: string;
+  textColor: string;
 };
 
 export type Store = {
   tasks: TaskState;
-  addTask: (column: keyof TaskState, task: string) => void;
+  addTask: (column: keyof TaskState, task: Task) => void;
   moveTask: (
     source: keyof TaskState,
     destination: keyof TaskState,
@@ -33,8 +45,7 @@ export type Task = {
   status: "Open" | "In Progress" | "Review" | "Done";
   createdDate: string;
   dueDate: string;
-  assignee: string[];
+  assignee: TaskAssignee;
 };
-
 
 export type TaskAssignee = string[];

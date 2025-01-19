@@ -13,11 +13,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useStore } from "@/stores/store";
 import { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-import CreateTaskDialog from "./createTaskDialog";
+import {CreateTaskDialog} from "./createTaskDialog";
+import { format } from "date-fns";
+import { FC } from "react";
 
 // -----------------------------------------------------------------------
 
-interface Props {
+type TaskItemProps = {
   task: Task;
   statusColors: {
     bgColor: string;
@@ -29,9 +31,8 @@ interface Props {
 
 // -----------------------------------------------------------------------
 
-export default function TaskItem(props: Props) {
+export const TaskItem: FC<TaskItemProps> = ({ task, statusColors, currentStatus }) => {
   const theme = useTheme();
-  const { task, statusColors, currentStatus } = props;
   const { deleteTask } = useStore();
   const [isEditOpen, setEditOpen] = useState(false);
 
@@ -86,7 +87,6 @@ export default function TaskItem(props: Props) {
           mb={1}
           sx={{
             color: statusColors?.textColor,
-            fontWeight: "bold",
             wordWrap: "break-word",
             overflow: "hidden",
             maxHeight: "60.5em",
@@ -101,15 +101,20 @@ export default function TaskItem(props: Props) {
               <Avatar
                 alt={assignee}
                 src="/static/images/avatar/1.jpg"
-                sx={{ width: "24px", height: "24px", fontSize: "12px" }}
+                sx={{
+                  width: "24px",
+                  height: "24px",
+                  fontSize: "12px",
+                }}
               />
               <Typography variant="body2">{assignee}</Typography>
             </Box>
           ))}
         </Box>
+
         <Typography variant="caption" sx={{ mt: 2 }}>
-          Created: {new Date(task.createdDate).toLocaleDateString()} <br />
-          Due: {new Date(task.dueDate).toLocaleDateString()}
+          Created: {format(new Date(task.createdDate), "dd/MM/yyyy")} <br />
+          Due: {format(new Date(task.dueDate), "dd/MM/yyyy")}
         </Typography>
       </Box>
       <CreateTaskDialog
@@ -120,4 +125,4 @@ export default function TaskItem(props: Props) {
       />
     </>
   );
-}
+};

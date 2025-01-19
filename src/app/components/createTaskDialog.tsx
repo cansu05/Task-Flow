@@ -2,7 +2,7 @@
 
 import { useStore } from "@/stores/store";
 import theme from "@/themes/theme";
-import { Task } from "@/types";
+import { Task, TaskState } from "@/types";
 import { MenuItem, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -11,17 +11,35 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { FC } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
 // -----------------------------------------------------------------------------
 
-interface Props {
+type CreateTaskDialogProps = {
   open: boolean;
   handleClose: () => void;
-  columnStatus: string; 
+  columnStatus: keyof TaskState; 
   taskToEdit?: Task;
 }
+
+const styles = {
+  textField: {
+    "& .MuiInputLabel-root": { color: theme.palette.text.primary },
+    "& .MuiInputBase-input": { color: theme.palette.text.primary },
+    "& .MuiOutlinedInput-root": {
+      "&:hover .MuiOutlinedInput-notchedOutline": {
+        borderColor: theme.palette.text.primary,
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: theme.palette.text.primary,
+      },
+    },
+  },
+};
+
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -49,31 +67,38 @@ const names = [
 
 // -----------------------------------------------------------------------------
 
-export default function CreateTaskDialog(props: Props) {
-  const { open, handleClose, columnStatus, taskToEdit } = props;
+export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
+  open,
+  handleClose,
+  columnStatus,
+  taskToEdit,
+}) => {
+
   const { addTask, editTask } = useStore();
 
-  const methods = useForm<Task>({
-    defaultValues: taskToEdit
-      ? {
-          ...taskToEdit,
-          createdDate: taskToEdit.createdDate
-            ? new Date(taskToEdit.createdDate)
-            : "",
-          dueDate: taskToEdit.dueDate
-            ? new Date(taskToEdit.dueDate)
-            : "",
-        }
-      : {
-          id: "",
-          taskTitle: "",
-          taskDescription: "",
-          status: columnStatus as "open" | "inProgress" | "review" | "done", // Directly use the passed key
-          createdDate: "",
-          dueDate: "",
-          assignee: [],
-        },
-  });
+ const methods = useForm<Task>({
+   defaultValues: taskToEdit
+     ? {
+         ...taskToEdit,
+         createdDate: taskToEdit.createdDate
+           ? new Date(taskToEdit.createdDate).toISOString()
+           : "",
+         dueDate: taskToEdit.dueDate
+           ? new Date(taskToEdit.dueDate).toISOString()
+           : "",
+       }
+     : {
+         id: "",
+         taskTitle: "",
+         taskDescription: "",
+         status: columnStatus as keyof TaskState,
+         createdDate: "",
+         dueDate: "",
+         assignee: [],
+       },
+ });
+
+
 
   const {
     handleSubmit,
@@ -82,25 +107,25 @@ export default function CreateTaskDialog(props: Props) {
     formState: { isValid },
   } = methods;
 
+  const formatTaskData = (data: Task): Task => ({
+    ...data,
+    id: taskToEdit ? taskToEdit.id : uuidv4(),
+    createdDate: data.createdDate
+      ? new Date(data.createdDate).toISOString()
+      : "",
+    dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : "",
+  });
+
   const onSubmit = (data: Task) => {
-    const taskData: Task = {
-      ...data,
-      id: taskToEdit ? taskToEdit.id : uuidv4(),
-      status: columnStatus as "open" | "inProgress" | "review" | "done", 
-      createdDate: data.createdDate
-        ? new Date(data.createdDate).toISOString()
-        : "",
-      dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : "",
-    };
-
+    const taskData = formatTaskData(data);
     if (taskToEdit) {
-      editTask(columnStatus, taskData); 
+      editTask(columnStatus, taskData);
     } else {
-      addTask(columnStatus, taskData); 
+      addTask(columnStatus, taskData);
     }
-
     handleClose();
   };
+
 
   return (
     <FormProvider {...methods}>
@@ -114,18 +139,7 @@ export default function CreateTaskDialog(props: Props) {
               name="taskTitle"
               label="Title"
               fullWidth
-              sx={{
-                "& .MuiInputLabel-root": { color: theme.palette.text.primary },
-                "& .MuiInputBase-input": { color: theme.palette.text.primary },
-                "& .MuiOutlinedInput-root": {
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.palette.text.primary,
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.palette.text.primary,
-                  },
-                },
-              }}
+              sx={styles.textField}
               slotProps={{ inputLabel: { shrink: true } }}
             />
 
@@ -137,18 +151,7 @@ export default function CreateTaskDialog(props: Props) {
               multiline
               rows={6}
               fullWidth
-              sx={{
-                "& .MuiInputLabel-root": { color: theme.palette.text.primary },
-                "& .MuiInputBase-input": { color: theme.palette.text.primary },
-                "& .MuiOutlinedInput-root": {
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.palette.text.primary,
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.palette.text.primary,
-                  },
-                },
-              }}
+              sx={styles.textField}
               slotProps={{ inputLabel: { shrink: true } }}
             />
 
@@ -169,22 +172,7 @@ export default function CreateTaskDialog(props: Props) {
                   }}
                   fullWidth
                   SelectProps={{ multiple: true, MenuProps }}
-                  sx={{
-                    "& .MuiInputLabel-root": {
-                      color: theme.palette.text.primary,
-                    },
-                    "& .MuiInputBase-input": {
-                      color: theme.palette.text.primary,
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.text.primary,
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.text.primary,
-                      },
-                    },
-                  }}
+                  sx={styles.textField}
                   slotProps={{ inputLabel: { shrink: true } }}
                 >
                   {names.map((name) => (
@@ -206,22 +194,7 @@ export default function CreateTaskDialog(props: Props) {
                   value={null}
                   onChange={(date) => field.onChange(date)}
                   label="Created date"
-                  sx={{
-                    "& .MuiInputLabel-root": {
-                      color: theme.palette.text.primary,
-                    },
-                    "& .MuiInputBase-input": {
-                      color: theme.palette.text.primary,
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.text.primary,
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.text.primary,
-                      },
-                    },
-                  }}
+                  sx={styles.textField}
                 />
               )}
             />
@@ -236,22 +209,7 @@ export default function CreateTaskDialog(props: Props) {
                   value={null}
                   onChange={(date) => field.onChange(date)}
                   label="Due date"
-                  sx={{
-                    "& .MuiInputLabel-root": {
-                      color: theme.palette.text.primary,
-                    },
-                    "& .MuiInputBase-input": {
-                      color: theme.palette.text.primary,
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.text.primary,
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.text.primary,
-                      },
-                    },
-                  }}
+                  sx={styles.textField}
                 />
               )}
             />
@@ -266,4 +224,4 @@ export default function CreateTaskDialog(props: Props) {
       </Dialog>
     </FormProvider>
   );
-}
+};
