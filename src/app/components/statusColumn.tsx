@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { Task, StatusColors } from "@/types";
 import { FC } from "react";
 import { SortableTask } from "./sortableTasks";
+import { useDroppable } from "@dnd-kit/core";
 
 type StatusColumnProps = {
   status: {
@@ -24,12 +25,18 @@ export const StatusColumn: FC<StatusColumnProps> = ({
 }) => {
   const { colors, title, name } = status;
 
+  const { isOver, setNodeRef } = useDroppable({
+    id: name,
+    data: { column: name },
+  });
+
   return (
     <Stack
+      ref={setNodeRef}
       spacing={2}
       sx={{
         padding: 2,
-        backgroundColor: colors.bgColor,
+        backgroundColor: isOver ? "rgba(0, 128, 0, 0.1)" : colors.bgColor,
         borderRadius: 3,
         minHeight: "50px",
         maxHeight: "700px",
@@ -68,5 +75,3 @@ export const StatusColumn: FC<StatusColumnProps> = ({
     </Stack>
   );
 };
-
-export default StatusColumn;
