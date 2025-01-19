@@ -8,6 +8,8 @@ import { FC } from "react";
 import { SortableTask } from "./sortableTasks";
 import { useDroppable } from "@dnd-kit/core";
 
+// -----------------------------------------------------
+
 type StatusColumnProps = {
   status: {
     colors: StatusColors;
@@ -17,6 +19,8 @@ type StatusColumnProps = {
   taskList: Task[];
   handleOpenDialog: (status: string) => void;
 };
+
+// -----------------------------------------------------
 
 export const StatusColumn: FC<StatusColumnProps> = ({
   status,

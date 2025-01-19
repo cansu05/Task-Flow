@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { Store } from "@/types"; 
 import { arrayMove } from "@dnd-kit/sortable";
 
+// ----------------------------------------------
+
 export const useStore = create<Store>((set) => ({
   tasks: {
     open: [],
@@ -9,7 +11,18 @@ export const useStore = create<Store>((set) => ({
     review: [],
     done: [],
   },
-
+  assignees: [
+    "Oliver Hansen",
+    "Van Henry",
+    "April Tucker",
+    "Ralph Hubbard",
+    "Omar Alexander",
+    "Carlos Abbott",
+    "Miriam Wagner",
+    "Bradley Wilkerson",
+    "Virginia Andrews",
+    "Kelly Snyder",
+  ],
   addTask: (column, task) =>
     set((state) => {
       if (!Array.isArray(state.tasks[column])) {
@@ -24,28 +37,26 @@ export const useStore = create<Store>((set) => ({
       };
     }),
 
+  moveTask: (source, destination, sourceIndex, destinationIndex) => {
+    set((state) => {
+      const updatedTasks = { ...state.tasks };
 
-moveTask: (source, destination, sourceIndex, destinationIndex) => {
-  set((state) => {
-    const updatedTasks = { ...state.tasks };
+      if (source === destination) {
+        updatedTasks[source] = arrayMove(
+          updatedTasks[source],
+          sourceIndex,
+          destinationIndex
+        );
+      } else {
+        const [movedTask] = updatedTasks[source].splice(sourceIndex, 1);
+        updatedTasks[destination].splice(destinationIndex, 0, movedTask);
+      }
 
-    if (source === destination) {
-      updatedTasks[source] = arrayMove(
-        updatedTasks[source],
-        sourceIndex,
-        destinationIndex
-      );
-    } else {
-      const [movedTask] = updatedTasks[source].splice(sourceIndex, 1);
-      updatedTasks[destination].splice(destinationIndex, 0, movedTask);
-    }
-
-    return {
-      tasks: updatedTasks,
-    };
-  });
-},
-
+      return {
+        tasks: updatedTasks,
+      };
+    });
+  },
 
   deleteTask: (column, taskId) =>
     set((state) => {
@@ -79,6 +90,16 @@ moveTask: (source, destination, sourceIndex, destinationIndex) => {
 
       return {
         tasks: updatedTasks,
+      };
+    }),
+  addAssignee: (name) =>
+    set((state) => {
+      if (state.assignees.includes(name)) {
+        console.warn(`Assignee "${name}" already exists.`);
+        return state;
+      }
+      return {
+        assignees: [...state.assignees, name],
       };
     }),
 }));

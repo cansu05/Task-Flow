@@ -16,15 +16,17 @@ export type StatusColors = {
 
 export type Store = {
   tasks: TaskState;
+  assignees: string[];
   addTask: (column: keyof TaskState, task: Task) => void;
   moveTask: (
-    source: keyof TaskState, 
-    destination: keyof TaskState, 
-    sourceIndex: number, 
-    destinationIndex: number 
+    source: keyof TaskState,
+    destination: keyof TaskState,
+    sourceIndex: number,
+    destinationIndex: number
   ) => void;
   deleteTask: (column: keyof TaskState, taskId: string) => void;
   editTask: (column: keyof TaskState, updatedTask: Task) => void;
+  addAssignee: (name: string) => void;
 };
 
 
@@ -38,6 +40,7 @@ export type Task = {
   createdDate: string;
   dueDate: string;
   assignee: TaskAssignee;
+  storyPoint: number;
 };
 
 export type TaskAssignee = string[];

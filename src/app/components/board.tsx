@@ -1,25 +1,45 @@
-'use client'
+"use client";
 
 import { Grid, useTheme } from "@mui/material";
 import { useState } from "react";
 import { CreateTaskDialog } from "./createTaskDialog";
-import {StatusColumn} from "./statusColumn";
+import { StatusColumn } from "./statusColumn";
 import { useStore } from "@/stores/store";
 import { getStatusMap } from "@/utils/statusMap";
-import { DndContext, closestCenter, DragEndEvent, DragOverlay } from "@dnd-kit/core";
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Task } from "@/types";
 
+// ---------------------------------------------------------
+
 export default function Board() {
   const { tasks, moveTask } = useStore();
   const theme = useTheme();
   const [open, setOpen] = useState<boolean>(false);
   const [currentStatus, setCurrentStatus] = useState<string>("");
-  const [activeTask, setActiveTask] = useState<Task | null>(null); 
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+
   const statusMap = getStatusMap(theme);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+      },
+    })
+  );
 
   const handleOpenDialog = (status: string) => {
     setCurrentStatus(status);
@@ -38,14 +58,14 @@ export default function Board() {
 
     if (sourceColumn && sourceIndex !== undefined) {
       const task = tasks[sourceColumn][sourceIndex];
-      setActiveTask(task); // Sürüklenen öğeyi kaydet
+      setActiveTask(task);
     }
   };
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    setActiveTask(null); // Sürükleme bitince temizle
+    setActiveTask(null);
 
     if (!over) {
       console.error("Over is null");
@@ -56,7 +76,7 @@ export default function Board() {
     const destinationColumn = over.data.current?.column;
 
     const sourceIndex = active.data.current?.index;
-    const destinationIndex = over.data.current?.index ?? 0; // Varsayılan olarak 0
+    const destinationIndex = over.data.current?.index ?? 0;
 
     if (!sourceColumn || !destinationColumn) {
       console.error("Invalid source or destination column");
@@ -77,6 +97,7 @@ export default function Board() {
 
   return (
     <DndContext
+      sensors={sensors} 
       collisionDetection={closestCenter}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
