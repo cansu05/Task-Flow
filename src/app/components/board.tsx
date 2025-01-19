@@ -102,7 +102,7 @@ export default function Board() {
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
-      <Grid container spacing={2}>
+      <Grid  container spacing={2}>
         {statusMap.map((status) => (
           <Grid item xs={12} sm={6} md={3} key={status.name}>
             <SortableContext

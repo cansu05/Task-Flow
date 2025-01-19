@@ -77,7 +77,7 @@ export const TaskItem: FC<TaskItemProps> = ({
               lineHeight: "1.5em",
             }}
           >
-            {task.taskTitle}
+           {task.taskTitle}
           </Typography>
           <Stack direction="row" alignSelf="flex-start">
             <IconButton onClick={handleEdit}>

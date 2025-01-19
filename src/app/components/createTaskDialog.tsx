@@ -14,6 +14,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { FC } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import dayjs from "dayjs";
 
 // -----------------------------------------------------------------------------
 
@@ -65,20 +66,17 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
       ? {
           ...taskToEdit,
           createdDate: taskToEdit.createdDate
-            ? new Date(taskToEdit.createdDate).toISOString()
-            : "",
-          dueDate: taskToEdit.dueDate
-            ? new Date(taskToEdit.dueDate).toISOString()
-            : "",
+            ? dayjs(taskToEdit.createdDate)
+            : null,
+          dueDate: taskToEdit.dueDate ? dayjs(taskToEdit.dueDate) : null,
         }
       : {
           id: "",
           taskTitle: "",
           taskDescription: "",
-          storyPoint: '', 
-          status: columnStatus as keyof TaskState,
-          createdDate: "",
-          dueDate: "",
+          storyPoint: 0,
+          createdDate: null,
+          dueDate: null,
           assignee: [],
         },
   });
@@ -93,11 +91,8 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
   const formatTaskData = (data: Task): Task => ({
     ...data,
     id: taskToEdit ? taskToEdit.id : uuidv4(),
-    createdDate: data.createdDate
-      ? new Date(data.createdDate).toISOString()
-      : "",
-    dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : "",
-    storyPoint: data.storyPoint , 
+    createdDate: data.createdDate ? data.createdDate.toString() : "",
+    dueDate: data.dueDate ? data.dueDate.toString() : "",
   });
 
   const onSubmit = (data: Task) => {
@@ -122,6 +117,7 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
               name="taskTitle"
               label="Title"
               fullWidth
+              inputProps={{ maxLength: 50 }}
               sx={styles.textField}
               slotProps={{ inputLabel: { shrink: true } }}
             />
@@ -134,6 +130,7 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
               multiline
               rows={6}
               fullWidth
+              inputProps={{ maxLength: 400 }}
               sx={styles.textField}
               slotProps={{ inputLabel: { shrink: true } }}
             />
@@ -179,14 +176,14 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
                 </TextField>
               )}
             />
+
             <Controller
               name="createdDate"
-              rules={{ required: "Created date is required" }}
               control={control}
               render={({ field }) => (
                 <DatePicker
                   {...field}
-                  value={null}
+                  value={field.value || null}
                   onChange={(date) => field.onChange(date)}
                   label="Created date"
                   sx={styles.textField}
@@ -196,12 +193,11 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
 
             <Controller
               name="dueDate"
-              rules={{ required: "Due date is required" }}
               control={control}
               render={({ field }) => (
                 <DatePicker
                   {...field}
-                  value={null}
+                  value={field.value || null}
                   onChange={(date) => field.onChange(date)}
                   label="Due date"
                   sx={styles.textField}

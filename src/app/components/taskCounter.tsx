@@ -24,7 +24,7 @@ export const TaskCounter: FC<TaskCounterProps> = ({ count, title, colors }) => (
     >
       {count}
     </Box>
-    <Typography variant="h5" sx={{ color: colors.textColor }}>
+    <Typography variant="h5" sx={{ color: colors.textColor, fontWeight:'bold' }}>
       {title}
     </Typography>
   </Stack>

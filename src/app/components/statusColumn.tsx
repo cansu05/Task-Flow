@@ -43,7 +43,7 @@ export const StatusColumn: FC<StatusColumnProps> = ({
         backgroundColor: isOver ? "rgba(0, 128, 0, 0.1)" : colors.bgColor,
         borderRadius: 3,
         minHeight: "50px",
-        maxHeight: "700px",
+     
         overflowY: "auto",
         "&::-webkit-scrollbar": { width: "8px" },
         "&::-webkit-scrollbar-thumb": {
@@ -54,15 +54,17 @@ export const StatusColumn: FC<StatusColumnProps> = ({
     >
       <TaskCounter count={taskList.length} title={title} colors={colors} />
 
-      {taskList.map((task, index) => (
-        <SortableTask
-          key={task.id}
-          task={task}
-          currentStatus={name}
-          index={index}
-          statusColors={colors}
-        />
-      ))}
+      <Stack gap={2} sx={{minHeight:'100px'}}>
+        {taskList.map((task, index) => (
+          <SortableTask
+            key={task.id}
+            task={task}
+            currentStatus={name}
+            index={index}
+            statusColors={colors}
+          />
+        ))}
+      </Stack>
 
       <Button
         onClick={() => handleOpenDialog(name)}
