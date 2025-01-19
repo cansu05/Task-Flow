@@ -20,9 +20,9 @@ import { v4 as uuidv4 } from "uuid";
 type CreateTaskDialogProps = {
   open: boolean;
   handleClose: () => void;
-  columnStatus: keyof TaskState; 
+  columnStatus: keyof TaskState;
   taskToEdit?: Task;
-}
+};
 
 const styles = {
   textField: {
@@ -39,8 +39,6 @@ const styles = {
   },
 };
 
-
-
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -52,19 +50,6 @@ const MenuProps = {
   },
 };
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
-
 // -----------------------------------------------------------------------------
 
 export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
@@ -73,32 +58,30 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
   columnStatus,
   taskToEdit,
 }) => {
+  const { addTask, editTask, assignees } = useStore();
 
-  const { addTask, editTask } = useStore();
-
- const methods = useForm<Task>({
-   defaultValues: taskToEdit
-     ? {
-         ...taskToEdit,
-         createdDate: taskToEdit.createdDate
-           ? new Date(taskToEdit.createdDate).toISOString()
-           : "",
-         dueDate: taskToEdit.dueDate
-           ? new Date(taskToEdit.dueDate).toISOString()
-           : "",
-       }
-     : {
-         id: "",
-         taskTitle: "",
-         taskDescription: "",
-         status: columnStatus as keyof TaskState,
-         createdDate: "",
-         dueDate: "",
-         assignee: [],
-       },
- });
-
-
+  const methods = useForm<Task>({
+    defaultValues: taskToEdit
+      ? {
+          ...taskToEdit,
+          createdDate: taskToEdit.createdDate
+            ? new Date(taskToEdit.createdDate).toISOString()
+            : "",
+          dueDate: taskToEdit.dueDate
+            ? new Date(taskToEdit.dueDate).toISOString()
+            : "",
+        }
+      : {
+          id: "",
+          taskTitle: "",
+          taskDescription: "",
+          storyPoint: '', 
+          status: columnStatus as keyof TaskState,
+          createdDate: "",
+          dueDate: "",
+          assignee: [],
+        },
+  });
 
   const {
     handleSubmit,
@@ -114,6 +97,7 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
       ? new Date(data.createdDate).toISOString()
       : "",
     dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : "",
+    storyPoint: data.storyPoint , 
   });
 
   const onSubmit = (data: Task) => {
@@ -125,7 +109,6 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
     }
     handleClose();
   };
-
 
   return (
     <FormProvider {...methods}>
@@ -155,6 +138,19 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
               slotProps={{ inputLabel: { shrink: true } }}
             />
 
+            <TextField
+              {...register("storyPoint", {
+                valueAsNumber: true,
+              })}
+              required
+              name="storyPoint"
+              label="Story point estimate"
+              type="number"
+              fullWidth
+              sx={styles.textField}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+
             <Controller
               name="assignee"
               rules={{ required: "Assignee is required" }}
@@ -175,7 +171,7 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
                   sx={styles.textField}
                   slotProps={{ inputLabel: { shrink: true } }}
                 >
-                  {names.map((name) => (
+                  {assignees.map((name) => (
                     <MenuItem key={name} value={name}>
                       {name}
                     </MenuItem>
@@ -183,7 +179,6 @@ export const CreateTaskDialog: FC<CreateTaskDialogProps> = ({
                 </TextField>
               )}
             />
-
             <Controller
               name="createdDate"
               rules={{ required: "Created date is required" }}
