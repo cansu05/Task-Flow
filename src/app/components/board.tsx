@@ -1,12 +1,20 @@
+'use client'
+
 import { Grid, useTheme } from "@mui/material";
-import { useState, useMemo } from "react";
-import {CreateTaskDialog} from "./createTaskDialog";
+import { useState } from "react";
+import { CreateTaskDialog } from "./createTaskDialog";
 import StatusColumn from "./statusColumn";
 import { useStore } from "@/stores/store";
 import { getStatusMap } from "@/utils/statusMap";
+import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 export default function Board() {
-  const { tasks } = useStore();
+  const { tasks, moveTask } = useStore();
   const theme = useTheme();
   const [open, setOpen] = useState<boolean>(false);
   const [currentStatus, setCurrentStatus] = useState<string>("");
@@ -23,29 +31,47 @@ export default function Board() {
     setCurrentStatus("");
   };
 
-  const taskColumns = useMemo(() => {
-    return statusMap.map((status) => {
-      const taskList = tasks[status.name] || [];
-      return (
-        <Grid item xs={12} sm={6} md={3} key={status.name}>
-          <StatusColumn
-            status={status}
-            taskList={taskList}
-            handleOpenDialog={handleOpenDialog}
-          />
-        </Grid>
-      );
-    });
-  }, [tasks, statusMap]);
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const sourceColumn = active.data.current?.column;
+    const destinationColumn = over.data.current?.column;
+
+    if (!sourceColumn || !destinationColumn) {
+      console.error("Invalid source or destination column");
+      return;
+    }
+
+    moveTask(sourceColumn, destinationColumn, active.id);
+  };
+
+
 
   return (
-    <Grid container spacing={2}>
-      {taskColumns}
-      <CreateTaskDialog
-        open={open}
-        handleClose={handleClose}
-        columnStatus={currentStatus}
-      />
-    </Grid>
+    <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <Grid container spacing={2}>
+        {statusMap.map((status) => (
+          <Grid item xs={12} sm={6} md={3} key={status.name}>
+            <SortableContext
+              items={tasks[status.name].map((task) => task.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <StatusColumn
+                status={status}
+                taskList={tasks[status.name]}
+                handleOpenDialog={handleOpenDialog}
+              />
+            </SortableContext>
+          </Grid>
+        ))}
+        <CreateTaskDialog
+          open={open}
+          handleClose={handleClose}
+          columnStatus={currentStatus}
+        />
+      </Grid>
+    </DndContext>
   );
 }

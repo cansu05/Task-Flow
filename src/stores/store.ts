@@ -24,16 +24,22 @@ export const useStore = create<Store>((set) => ({
     }),
 
   moveTask: (source, destination, taskIndex) => {
-    set((state) => {
-      const updatedTasks = { ...state.tasks };
-      const [movedTask] = updatedTasks[source].splice(taskIndex, 1);
-      updatedTasks[destination].push(movedTask);
+  set((state) => {
+    if (!state.tasks[source] || !state.tasks[destination]) {
+      console.error(`Invalid source (${source}) or destination (${destination}) column`);
+      return state;
+    }
 
-      return {
-        tasks: updatedTasks,
-      };
-    });
-  },
+    const updatedTasks = { ...state.tasks };
+    const [movedTask] = updatedTasks[source].splice(taskIndex, 1);
+    updatedTasks[destination].push(movedTask);
+
+    return {
+      tasks: updatedTasks,
+    };
+  });
+},
+
   deleteTask: (column, taskId) =>
     set((state) => {
       if (!Array.isArray(state.tasks[column])) {

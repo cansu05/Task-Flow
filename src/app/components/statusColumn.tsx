@@ -1,11 +1,11 @@
+"use client";
+
 import { TaskCounter } from "./taskCounter";
-import {TaskItem} from "./taskItem";
 import { Button, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { Task, StatusColors } from "@/types";
 import { FC } from "react";
-
-// -------------------------------------------------------
+import { SortableTask } from "./sortableTasks";
 
 type StatusColumnProps = {
   status: {
@@ -17,9 +17,11 @@ type StatusColumnProps = {
   handleOpenDialog: (status: string) => void;
 };
 
-// -------------------------------------------------------
-
-export const StatusColumn: FC<StatusColumnProps> = ({ status, taskList, handleOpenDialog }) => {
+export const StatusColumn: FC<StatusColumnProps> = ({
+  status,
+  taskList,
+  handleOpenDialog,
+}) => {
   const { colors, title, name } = status;
 
   return (
@@ -42,11 +44,11 @@ export const StatusColumn: FC<StatusColumnProps> = ({ status, taskList, handleOp
       <TaskCounter count={taskList.length} title={title} colors={colors} />
 
       {taskList.map((task) => (
-        <TaskItem
+        <SortableTask
           key={task.id}
           task={task}
-          statusColors={colors}
           currentStatus={name}
+          statusColors={colors}
         />
       ))}
 

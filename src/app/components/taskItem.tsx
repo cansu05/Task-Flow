@@ -57,6 +57,7 @@ export const TaskItem: FC<TaskItemProps> = ({ task, statusColors, currentStatus 
           borderRadius: 3,
           display: "flex",
           flexDirection: "column",
+          cursor: "grab",
         }}
       >
         <Box display="flex" alignItems="center" justifyContent="space-between">
