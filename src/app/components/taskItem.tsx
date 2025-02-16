@@ -95,7 +95,6 @@ export const TaskItem: FC<TaskItemProps> = ({
           variant="body1"
           mb={1}
           sx={{
-            color: statusColors?.textColor,
             wordWrap: "break-word",
             overflow: "hidden",
             maxHeight: "60.5em",
