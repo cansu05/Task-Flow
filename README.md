@@ -1,23 +1,23 @@
-# ✅ Task Flow – Kanban Task Management App
+# ✅ Task Flow – Kanban Görev Yönetim Uygulaması
 
-This project is a modern **Kanban-style task management application**, where users can organize tasks across columns using drag and drop. Built with React 19 and Next.js 15, it offers a smooth and responsive user experience.
+Bu proje, kullanıcıların görevleri sürükle-bırak yöntemiyle kolonlar arasında organize edebildiği modern bir **Kanban tarzı görev yönetim uygulamasıdır**. React 19 ve Next.js 15 ile geliştirilmiş, hızlı ve duyarlı bir kullanıcı deneyimi sunar.
 
-## 🚀 Features  
-- 🧩 Kanban-style task organization (To Do / In Progress / Done)  
-- ✨ Drag and drop support powered by `@dnd-kit/sortable`  
-- 🛠️ Global state management with Zustand  
-- ⚛️ Next.js 15 with App Router architecture  
-- 🎨 Responsive design with Material UI and styled-components  
-- 📝 Form handling with React Hook Form  
-- 💡 Type-safe development with TypeScript  
+## 🚀 Özellikler  
+- 🧩 Kanban tarzı görev yönetimi (To Do / In Progress / Done)  
+- ✨ `@dnd-kit/sortable` ile sürükle-bırak desteği  
+- 🛠️ Zustand ile global state yönetimi  
+- ⚛️ Next.js 15 App Router mimarisi  
+- 🎨 Material UI ve styled-components ile responsive tasarım  
+- 📝 React Hook Form ile form yönetimi  
+- 💡 TypeScript ile tip güvenli geliştirme  
 
-## 🛠️ Installation & Setup
+## 🛠️ Kurulum ve Çalıştırma
 
-To run the project locally:
+Projeyi yerel ortamda çalıştırmak için:
 
 ```bash
-# Install dependencies
+# Bağımlılıkları yükleyin
 npm install
 
-# Start the development server
+# Geliştirme sunucusunu başlatın
 npm run dev
